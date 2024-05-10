@@ -1,5 +1,9 @@
 from pathlib import Path
 
+import json
+import torch
+from model import NeuralNet
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -114,3 +118,29 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# ---
+
+def getModel():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    with open('intents.json', 'r') as json_data:
+        intents = json.load(json_data)
+
+    FILE = "data.pth"
+    data = torch.load(FILE)
+
+    input_size = data["input_size"]
+    hidden_size = data["hidden_size"]
+    output_size = data["output_size"]
+    all_words = data['all_words']
+    tags = data['tags']
+    model_state = data["model_state"]
+
+    model = NeuralNet(input_size, hidden_size, output_size).to(device)
+    model.load_state_dict(model_state)
+    model.eval()
+
+    return (model, all_words, tags)
+
+MODEL, ALL_WORDS, TAGS = getModel()

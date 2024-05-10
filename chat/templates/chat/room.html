@@ -27,7 +27,15 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            // document.querySelector('#chat-log').value += (data.message + '\n');
+            if (data.message) {
+                document.querySelector('#chat-log').value += ("ME: " + data.message + '\n');
+            }
+            if (data.bot_message) {
+                setTimeout(() => {
+                    document.querySelector('#chat-log').value += ("BOT: " + data.bot_message + '\n');
+                }, 300);
+            }
         };
 
         chatSocket.onclose = function(e) {
